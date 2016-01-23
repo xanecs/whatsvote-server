@@ -17,7 +17,7 @@
     "koa-router": "^5.3.0",
     "koa-static": "^2.0.0",
     "koa-validation": "^0.1.5",
-    "mqtt": "^1.6.3",
+    "mqtt": "^1.7.0",
     "node-uuid": "^1.4.7",
     "rethink-migrate": "^1.0.3",
     "rethinkdbdash": "^2.2.16"
