@@ -9,13 +9,16 @@
   "author": "Leon Bentrup <leon@leonadi.de>",
   "license": "ISC",
   "dependencies": {
+    "bcrypt-then": "^1.0.0",
     "koa": "^1.1.2",
     "koa-bodyparser": "^2.0.1",
+    "koa-cors": "0.0.16",
     "koa-jwt": "^1.1.1",
     "koa-router": "^5.3.0",
     "koa-static": "^2.0.0",
     "koa-validation": "^0.1.5",
     "mqtt": "^1.6.3",
+    "node-uuid": "^1.4.7",
     "rethink-migrate": "^1.0.3",
     "rethinkdbdash": "^2.2.16"
   }
