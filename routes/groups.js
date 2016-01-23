@@ -23,6 +23,7 @@ module.exports = function(router) {
     let group = this.request.body;
     group.registertoken = crypto.randomBytes(8).toString('hex');
     group.id = uuid.v4();
+    group.linked = false;
 
     let result = yield this.r.table('users').get(userId).update({
       groups: this.r.row('groups').default([]).append(group)
@@ -77,8 +78,13 @@ module.exports = function(router) {
       this.body = {ok: false, message: 'No group with this id'};
     }
 
+    if (this.request.url.indexOf('refreshparticipants') !== -1) {
+      let info = yield this.whatsapp.getGroupInfo(userId, result[0].jid);
+      result.participants = info.participants;
+    }
+
     let response = result[0];
     response.ok = true;
     this.body = response;
-  })
+  });
 };
