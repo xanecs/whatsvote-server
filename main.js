@@ -39,9 +39,10 @@ app.use(koaValidation());
 
 let router = koaRouter();
 
-require('./routes/auth')(router, mqttClient);
-require('./routes/user')(router, mqttClient);
-require('./routes/groups')(router, mqttClient);
+require('./routes/auth')(router);
+require('./routes/user')(router);
+require('./routes/groups')(router);
+require('./routes/poll')(router);
 
 app.use(router.routes());
 app.use(router.allowedMethods());
