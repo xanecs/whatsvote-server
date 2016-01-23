@@ -1,9 +1,10 @@
+'use strict';
+
 module.exports = function(router) {
-  router.get('/user', function *(next) {
+  router.get('/auth/me', function *(next) {
     this.status = 200;
-    this.body = {
-      ok: true,
-      user: this.state.user
-    };
+    let response = this.state.user;
+    response.ok = true;
+    this.body = response;
   });
 }
