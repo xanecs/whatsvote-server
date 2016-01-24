@@ -1,6 +1,7 @@
 'use strict';
 
 let uuid = require('node-uuid');
+let config = require('../config.json');
 
 class WhatsApp {
   constructor(r, mqtt) {
@@ -80,7 +81,7 @@ class WhatsApp {
       }
       this.sendMessage(
         jid,
-        'This group is now registered at WhatsVote. Learn more at http://www.whatsvote.me'
+        `This group is now registered at WhatsVote. Learn more at ${config.frontend}`
       );
       this.getGroupInfo(email, jid);
     });
@@ -93,7 +94,8 @@ class WhatsApp {
       let participants = [];
 
       for (let participant in message.participants) {
-        participants.push(participant.split('@')[0]);
+        let phone = participant.split('@')[0];
+        if (phone != config.bot) participants.push(phone);
       }
 
       this.r.table('users').get(userId).update({
