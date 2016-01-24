@@ -34,7 +34,7 @@ app.use(function *(next) {
   yield next;
 });
 
-app.use(koaJwt({secret: config.jwt.secret}).unless({path: ['/auth/signup', '/auth/login']}));
+app.use(koaJwt({secret: config.jwt.secret}).unless({path: ['/auth/signup', '/auth/login', /^\/polls\/vote\/[^\/]+\/[^\/]+$/, /^\/results\/[^\/]+$/]}));
 app.use(koaValidation());
 
 let router = koaRouter();

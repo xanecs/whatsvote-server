@@ -1,0 +1,32 @@
+api:
+  build: .
+  ports:
+    - "4000:3000"
+  environment:
+    - VIRTUAL_HOST=api.whatsvote.leonadi.de
+  restart: always
+  links:
+    - db
+    - mqtt
+
+db:
+  image: rethinkdb
+  restart: always
+
+mqtt:
+  image: ansi/mosquitto
+  restart: always
+
+whatsapp:
+  build: ../whatsapp-server
+  restart: always
+  links:
+    - mqtt
+
+frontend:
+  build: ../whatsvote-app
+  ports:
+    - "8080:80"
+  environment:
+    - VIRTUAL_HOST=whatsvote.leonadi.de
+  restart: always

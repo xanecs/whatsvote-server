@@ -52,7 +52,7 @@ module.exports = function (router) {
     }
 
     delete result.password;
-    delete response.groups;
+    delete result.groups;
 
     let token = jwt.sign(result, config.jwt.secret, {expiresIn: "30d"});
     this.status = 200;

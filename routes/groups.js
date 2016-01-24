@@ -76,6 +76,7 @@ module.exports = function(router) {
     if (result.length === 0) {
       this.status = 404;
       this.body = {ok: false, message: 'No group with this id'};
+      return;
     }
 
     if (this.request.url.indexOf('refreshparticipants') !== -1) {

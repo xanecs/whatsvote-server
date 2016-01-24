@@ -4,7 +4,8 @@
   "description": "A strawpoll site with advanced voting systems and WhatsApp integration",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/.bin/rethink-migrate up && node main.js"
   },
   "author": "Leon Bentrup <leon@leonadi.de>",
   "license": "ISC",
