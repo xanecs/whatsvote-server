@@ -2,6 +2,7 @@
 let validatePoll = require('../validations/poll');
 let crypto = require('crypto');
 let config = require('../config.json');
+let Voting = require('../voting/voting');
 
 module.exports = function(router) {
   router.post('/polls', validatePoll(), function *(next) {
@@ -92,58 +93,17 @@ module.exports = function(router) {
   router.post('/polls/vote/:pollid/:token', function *(next) {
     let pollId = this.params.pollid;
     let token = this.params.token;
-    let optionId = this.request.body.optionId;
 
-    let poll = yield this.r.table('polls').get(pollId);
-
-    if (!poll) {
-      this.status = 404;
-      this.body = {ok: false, message: 'Poll not found'};
-      return;
-    }
-
-    let tokenValid = false;
-    let voterPhone = '';
-    for (let checkToken of poll.tokens) {
-      if (checkToken.token === token) {
-        tokenValid = true;
-        voterPhone = checkToken.phone;
-      }
-    }
-
-    if (!tokenValid) {
+    let voting = yield Voting.get(pollId, token, this.r);
+    if (!voting.verifyToken()) {
       this.status = 401;
-      this.body = {ok: false, message: 'Invalid token'};
+      this.body = {ok: false, message: 'Invalid or expired token'};
       return;
     }
-
-    let result = yield this.r.table('polls').get(pollId).update(poll => {
-      let changes = {
-        tokens: poll('tokens').filter(chtoken => {
-          return chtoken('token').ne(token);
-        }),
-        votes: {}
-      };
-      changes.votes[optionId.toString()] = poll('votes')(optionId.toString()).append(voterPhone);
-      return changes;
-    }, {
-      returnChanges: true
-    });
-    console.log(result);
-    if (result.skipped + result.unchanged + result.errors > 0) {
-      this.status = 500;
-      this.body = {ok: false};
-      return;
-    }
-
-    let upPoll = result.changes[0].new_val
-
-    if (upPoll.tokens.length == 0) {
-      let group = yield this.r.table('users').get(upPoll.userId)('groups').filter({id: upPoll.groupId});
-      this.whatsapp.sendMessage(group[0].jid, `The results are in. Look at them at ${config.frontend}results/${upPoll.id}`);
-    }
-
+    let upPoll = yield voting.castVote(this.request.body);
+    voting.checkDone(upPoll, this.whatsapp);
     this.body = {ok: true};
+
   });
 
   router.get('/polls', function *(next) {
