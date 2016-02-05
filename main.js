@@ -11,6 +11,7 @@ let http = require('http');
 let rethinkdb = require('rethinkdbdash');
 let mqtt = require('mqtt');
 let whatsappApi = require('./api/whatsapp');
+let Mailgun = require('mailgun');
 
 let r = rethinkdb(config.rethinkdb);
 
@@ -20,6 +21,8 @@ mqttClient.on('connect', () => {
   mqttClient.subscribe('whatsapp/iq');
   console.log('Connected to mqtt');
 });
+
+let mailgun = new Mailgun.Mailgun(config.mailgun);
 
 let whatsapp = new whatsappApi(r, mqttClient);
 
@@ -34,15 +37,15 @@ app.use(function *(next) {
   yield next;
 });
 
-app.use(koaJwt({secret: config.jwt.secret}).unless({path: ['/auth/signup', '/auth/login', /^\/polls\/vote\/[^\/]+\/[^\/]+$/, /^\/results\/[^\/]+$/]}));
+app.use(koaJwt({secret: config.jwt.secret}).unless({path: ['/auth/signup', '/auth/login', /^\/polls\/vote\/[^\/]+\/[^\/]+$/, /^\/results\/[^\/]+$/, /^\/auth\/verify\/[^\/]+\/[^\/]+$/]}));
 app.use(koaValidation());
 
 let router = koaRouter();
 
-require('./routes/auth')(router);
-require('./routes/user')(router);
-require('./routes/groups')(router);
-require('./routes/poll')(router);
+require('./routes/auth')(router, mailgun);
+require('./routes/user')(router, mailgun);
+require('./routes/groups')(router, mailgun);
+require('./routes/poll')(router, mailgun);
 
 app.use(router.routes());
 app.use(router.allowedMethods());
