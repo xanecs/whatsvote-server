@@ -12,6 +12,8 @@ api:
 db:
   image: rethinkdb
   restart: always
+  volumes:
+    - "$PWD:/data"
 
 mqtt:
   image: ansi/mosquitto
