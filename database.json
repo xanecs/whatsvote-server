@@ -1,0 +1,6 @@
+{
+  "host": "<database host here>",
+  "port": 28015,
+  "db": "whatsvote",
+  "loglevel": "info"
+}

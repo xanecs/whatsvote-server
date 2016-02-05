@@ -1,0 +1,21 @@
+{
+  "rethinkdb": {
+    "servers": [
+      {"host": "<database host here>", "port": 28015}
+    ],
+    "db": "whatsvote"
+  },
+  "koa": {
+    "port": 3000
+  },
+  "jwt": {
+    "secret": "<random string here>"
+  },
+  "mqtt": "mqtt://<mqtt host here>:1883",
+  "frontend": "http://localhost:9000/#/",
+  "bot": "<bots phone number>",
+  "mailgun": "<mailgun.com key>",
+  "email": {
+    "sender": "<email sender>"
+  }
+}
