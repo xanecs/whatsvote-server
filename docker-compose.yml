@@ -13,7 +13,7 @@ db:
   image: rethinkdb
   restart: always
   volumes:
-    - "$PWD:/data"
+    - "/opt:/data"
 
 mqtt:
   image: ansi/mosquitto
