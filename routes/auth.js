@@ -35,10 +35,11 @@ module.exports = function (router, mailgun) {
     }
     let response = result.changes[0].new_val;
     delete response.password;
-    delete response.mailtoken;
 
     let message = verifyTemplate(response);
     mailgun.sendText(config.email.sender, response.email, message.subject, message.body);
+
+    delete response.mailtoken;
 
     response.ok = true;
     this.status = 200;
