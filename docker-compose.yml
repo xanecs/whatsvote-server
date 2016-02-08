@@ -20,7 +20,7 @@ mqtt:
   restart: always
 
 whatsapp:
-  build: ../whatsapp-server
+  build: ../axiom
   restart: always
   links:
     - mqtt
