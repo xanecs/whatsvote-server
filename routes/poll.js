@@ -25,10 +25,24 @@ module.exports = function(router) {
     let tokens = [];
 
     for (let participant of groupInfo.participants) {
-      tokens.push({
-        phone: participant,
-        token: crypto.randomBytes(8).toString('hex')
-      });
+      let token = {
+        token: crypto.randomBytes(8).toString('hex'),
+        phone: participant
+      };
+      let dontPush = false;
+      for (let link of group.links) {
+        let ind = link.indexOf(participant);
+        if (ind !== -1) {
+          if (ind == 0) {
+            token.link = link;
+          } else {
+            dontPush = true;
+          }
+        }
+      }
+      if (dontPush) continue;
+
+      tokens.push(token);
     }
 
     poll.tokens = tokens;
@@ -52,7 +66,7 @@ module.exports = function(router) {
     let pollResult = result.changes[0].new_val;
 
     for (let token of pollResult.tokens) {
-      this.whatsapp.sendMessage(token.phone, `In the group '${groupInfo.subject}', the question '${pollResult.question}' was asked. To vote, visit: ${config.frontend}vote/${pollResult.id}/${token.token}`);
+      this.whatsapp.sendMessage(token.link ? token.link : token.phone, `In the group '${groupInfo.subject}', the question '${pollResult.question}' was asked. To vote, visit: ${config.frontend}vote/${pollResult.id}/${token.token}`);
     }
 
     pollResult.ok = true;
