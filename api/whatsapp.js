@@ -8,7 +8,7 @@ class WhatsApp {
     this.r = r;
     this.mqtt = mqtt;
     this.hookMqtt();
-    this.callbacks = {}
+    this.callbacks = {};
   }
 
   hookMqtt() {
@@ -31,7 +31,7 @@ class WhatsApp {
       this.callbacks[callbackId] = (result) => {
         resolve(result);
         delete this.callbacks[callbackId];
-      }
+      };
     });
     return {promise: promise, callbackId: callbackId};
   }
@@ -48,8 +48,18 @@ class WhatsApp {
     }));
     return callback.promise;
   }
-
-  sendMessage(phone, message) {
+  
+  sendMessage(phones, message) {
+    if (Array.isArray(phones)) {
+      for (let phone of phones) {
+        this.sendSingleMessage(phone, message);
+      }
+    } else {
+      this.sendSingleMessage(phones, message);
+    }
+  }
+  
+  sendSingleMessage(phone, message) {
     this.mqtt.publish('whatsapp/outgoing', JSON.stringify({
       phone: phone,
       message: message
