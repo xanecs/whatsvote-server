@@ -88,4 +88,40 @@ module.exports = function(router) {
     response.ok = true;
     this.body = response;
   });
+
+  router.put('/groups/:id', function *(next) {
+    let userId = this.state.user.email;
+    let groupId = this.params.id;
+    let newGroup = this.request.body;
+    newGroup.id = groupId;
+
+    let result = yield this.r.table('users').get(userId).update({
+      groups: this.r.row('groups').map(group => {
+        newGroup.registertoken = group('registertoken');
+        newGroup.participants = group('participants');
+        return this.r.branch(
+          group('id').eq(groupId),
+          newGroup,
+          group);
+      })
+    }, {
+      returnChanges: true
+    });
+    console.log(result);
+
+    if (result.errors > 0) {
+      this.status = 500;
+      this.body = {ok: false, message: 'An unknown error occured'};
+      return;
+    }
+
+    if (result.unchanged > 0) {
+      this.status = 404;
+      this.body = {ok: false, message: 'No group with this id'};
+      return;
+    }
+    
+    newGroup.ok = true;
+    this.body = newGroup;
+  });
 };
