@@ -4,6 +4,8 @@ api:
     - "4000:3000"
   environment:
     - VIRTUAL_HOST=api.whatsvote.leonadi.de
+    - LETSENCRYPT_HOST=api.whatsvote.leonadi.de
+    - LETSENCRYPT_EMAIL=leon@leonadi.de
   restart: always
   links:
     - db
@@ -31,4 +33,6 @@ frontend:
     - "8080:80"
   environment:
     - VIRTUAL_HOST=whatsvote.leonadi.de
+    - LETSENCRYPT_HOST=whatsvote.leonadi.de
+    - LETSENCRYPT_EMAIL=bot@whatsvote.leonadi.de
   restart: always
