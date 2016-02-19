@@ -30,7 +30,7 @@ module.exports = function(router) {
         phone: participant
       };
       let dontPush = false;
-      for (let link of group.links) {
+      for (let link of (group.links || [])) {
         let ind = link.indexOf(participant);
         if (ind !== -1) {
           if (ind == 0) {
@@ -65,8 +65,23 @@ module.exports = function(router) {
 
     let pollResult = result.changes[0].new_val;
 
+    let i = 0;
+
     for (let token of pollResult.tokens) {
-      this.whatsapp.sendMessage(token.link ? token.link : token.phone, `In the group '${groupInfo.subject}', the question '${pollResult.question}' was asked. To vote, visit: ${config.frontend}vote/${pollResult.id}/${token.token}`);
+      let messages = [
+        `In the group '${groupInfo.subject}', the question '${pollResult.question}' was asked. To vote, visit: ${config.frontend}vote/${pollResult.id}/${token.token}`,
+
+        `The question '${pollResult.question}' has been asked in '${groupInfo.subject}'. Please visit: ${config.frontend}vote/${pollResult.id}/${token.token}`,
+
+        `A poll was created in the group '${groupInfo.subject}'. The question is '${pollResult.question}'. Open this link to cast your vote: ${config.frontend}vote/${pollResult.id}/${token.token}`,
+
+        `Please cast your vote for the question: '${pollResult.question}'. it has been asked in the group '${groupInfo.subject}'. Visit this URL to vote: ${config.frontend}vote/${pollResult.id}/${token.token}`
+      ];
+      let msg = messages[i % messages.length];
+      setTimeout(() => {
+        this.whatsapp.sendMessage(token.link ? token.link : token.phone, msg);
+      }, i * 10000 + Math.random() * 5000);
+      i++;
     }
 
     pollResult.ok = true;
